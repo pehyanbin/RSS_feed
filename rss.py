@@ -26,41 +26,46 @@ feeds = {
     ]),
 }
 
-# --- User Input ---
-print("Select feed category:")
+# CLI colours
+RESET = "\033[0m"
+BOLD = "\033[1m"
+CYAN = "\033[96m"
+GREEN = "\033[92m"
+YELLOW = "\033[93m"
+BLUE = "\033[94m"
+RED = "\033[91m"
+
+print(f"{BOLD}{CYAN}Select feed category:{RESET}")
 for key, (name, _) in feeds.items():
-    print(f"{key}. {name}")
-print("0. Show ALL")
+    print(f"{YELLOW}{key}.{RESET} {name}")
+print(f"{YELLOW}0.{RESET} Show ALL")
 
-choice = input("Enter your choice: ").strip()
-max_items = input("How many items per feed? ").strip()
+choice = input(f"\n{GREEN}Enter your choice: {RESET}").strip()
+max_items = input(f"{GREEN}How many items per feed? {RESET}").strip()
 
-# Validate inputs
 if not max_items.isdigit():
     max_items = 5
 else:
     max_items = int(max_items)
 
-# --- Function to display feeds ---
 def display_feed(category_name, urls):
-    print(f"\n=== {category_name} ===")
+    print(f"\n{BOLD}{CYAN}=== {category_name} ==={RESET}")
 
     for url in urls:
         feed = feedparser.parse(url)
         source = feed.feed.get("title", url)
 
-        print(f"\nSource: {source}")
+        print(f"\n{BOLD}{BLUE}Source: {source}{RESET}")
 
-        for entry in feed.entries[:max_items]:
+        for index, entry in enumerate(feed.entries[:max_items], start=1):
             title = entry.get("title", "No title")
             link = entry.get("link", "No link")
             published = entry.get("published", "No date")
 
-            print(f"- {title}")
-            print(f"  Date: {published}")
-            print(f"  Link: {link}")
+            print(f"{YELLOW}{index}.{RESET} {BOLD}{title}{RESET}")
+            print(f"   {GREEN}Date:{RESET} {published}")
+            print(f"   {YELLOW}Link:{RESET} {YELLOW}{link}{RESET}")
 
-# --- Logic ---
 if choice == "0":
     for _, (name, urls) in feeds.items():
         display_feed(name, urls)
@@ -68,6 +73,6 @@ elif choice in feeds:
     name, urls = feeds[choice]
     display_feed(name, urls)
 else:
-    print("Invalid choice. Showing ALL feeds instead.")
+    print(f"{RED}Invalid choice. Showing ALL feeds instead.{RESET}")
     for _, (name, urls) in feeds.items():
         display_feed(name, urls)
